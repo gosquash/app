@@ -1,19 +1,17 @@
-import { useHookstate } from "@hookstate/core";
 import { useFonts } from "expo-font";
-import { Tabs, usePathname, useRouter } from "expo-router";
-import { StatusBar } from "expo-status-bar";
+import { Stack } from "expo-router/stack";
 import * as SplashScreen from "expo-splash-screen";
+import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
-import { KeyboardAvoidingView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import Text from "@/components/text";
-import { fetchUser, user } from "@/store";
+import { fetchUser, useUser } from "@/store/user";
 import { variables } from "@/utils/styles";
 
 SplashScreen.preventAutoHideAsync();
 
 export default function Layout() {
+	const login = useUser((state) => state.login);
 	const [userLoading, setUserLoading] = useState(true);
 
 	const [fontsLoaded] = useFonts({
@@ -26,7 +24,13 @@ export default function Layout() {
 		async function run() {
 			await new Promise((resolve) => setTimeout(resolve, 1000));
 
-			await fetchUser();
+			const user = await fetchUser();
+
+			if (!user) {
+				return;
+			}
+
+			login(user);
 
 			setUserLoading(false);
 		}
@@ -46,98 +50,29 @@ export default function Layout() {
 		<>
 			<StatusBar style="light" />
 
-			{isLoading ? null : <App />}
+			{!isLoading && <App />}
 		</>
 	);
 }
 
 function App() {
 	const insets = useSafeAreaInsets();
-	const router = useRouter();
-	const path = usePathname();
-
-	const userState = useHookstate(user);
-
-	useEffect(() => {
-		const user = userState.get();
-
-		if (!user || true) {
-			router.push("auth/login");
-		}
-	}, []);
-
-	const isAuth = path.startsWith("/auth/");
 
 	return (
-		<KeyboardAvoidingView
-			style={{
-				backgroundColor: "#131317",
-				flex: 1,
+		<Stack
+			screenOptions={{
+				headerShown: false,
+				contentStyle: {
+					backgroundColor: variables.background,
+					paddingTop: insets.top,
+				},
+				animation: "flip",
 			}}
 		>
-			<Tabs
-				initialRouteName="index"
-				screenOptions={{
-					headerShown: false,
+			<Stack.Screen name="(tabs)" />
 
-					tabBarStyle: {
-						display: isAuth ? "none" : "flex",
-						backgroundColor: "#0C0C0E",
-						borderTopWidth: 1,
-						borderTopColor: "#26262b",
-						paddingTop: 8,
-						paddingBottom: 8 + insets.bottom,
-						height: 64 + insets.bottom,
-					},
-
-					tabBarActiveTintColor: variables.accent,
-					tabBarInactiveTintColor: variables.colorSecondary,
-				}}
-				sceneContainerStyle={{
-					backgroundColor: "#131317",
-					paddingTop: insets.top,
-				}}
-			>
-				<Tabs.Screen
-					name="index"
-					options={{
-						lazy: true,
-						tabBarLabel: (labelProps) => (
-							<TabText text="Home" {...labelProps} />
-						),
-					}}
-				/>
-				<Tabs.Screen
-					name="groups/index"
-					options={{
-						lazy: true,
-						tabBarLabel: (labelProps) => (
-							<TabText text="Groups" {...labelProps} />
-						),
-					}}
-				/>
-
-				<Tabs.Screen name="games/index" options={{ href: null }} />
-
-				<Tabs.Screen name="auth/login" options={{ href: null }} />
-				<Tabs.Screen name="auth/register" options={{ href: null }} />
-			</Tabs>
-		</KeyboardAvoidingView>
-	);
-}
-
-function TabText({
-	text,
-	focused,
-	color,
-}: {
-	text: string;
-	focused: boolean;
-	color: string;
-}) {
-	return (
-		<Text bold={focused} style={{ color, fontSize: 12, lineHeight: 14 }}>
-			{text}
-		</Text>
+			<Stack.Screen name="(auth)/login" />
+			<Stack.Screen name="(auth)/register" />
+		</Stack>
 	);
 }

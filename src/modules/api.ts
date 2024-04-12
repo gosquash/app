@@ -1,32 +1,47 @@
-const API_URL = "http://10.0.0.149:1323";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-type APIResponse<B> =
+const API_URL = "http://192.168.1.172:1323";
+
+type APIResponse<R> =
 	| {
 			error: true;
+			data: R;
 	  }
 	| ({
 			error: false;
-	  } & B);
+	  } & R);
 
-export async function fetchAPI<B = unknown>(
+export interface APIRequestOptions<B extends BodyInit> extends RequestInit {
+	method?: "GET" | "POST" | "PUT" | "DELETE";
+	body?: B | undefined;
+	headers?: Record<string, string>;
+}
+
+export async function fetchAPI<R = unknown, B extends BodyInit = BodyInit>(
 	url: string,
-	options?: RequestInit,
-): Promise<APIResponse<B>> {
+	options?: APIRequestOptions<B>,
+): Promise<APIResponse<R>> {
 	try {
+		const token = await AsyncStorage.getItem("token");
+
 		const response = await fetch(`${API_URL}${url}`, {
 			...options,
 			headers: {
-				authorization:
-					process.env.TEST_TOKEN ||
-					"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2F1dGguZ29zcXVhc2guZ2ciLCJzdWIiOiJmMTMwN2JmOS02ODI1LTRlZTktYjI3YS01MzI1NTIxNDMwNWUiLCJleHAiOjE3NDMxNzA0ODF9.ta5F7tQApBwBDE5UPqnVJz2IvMb3EmPj5Cc-nDw_NkU",
+				authorization: `Bearer ${token}`,
 				...options?.headers,
 			},
 		});
 
-		return response.json() as Promise<APIResponse<B>>;
+		const data: APIResponse<R> = await response.json();
+
+		if (data.error) {
+			return { error: true, data: data.data };
+		}
+
+		return data;
 	} catch (error) {
 		console.error(error);
 	}
 
-	return { error: true };
+	return { error: true, data: null as any };
 }

@@ -1,42 +1,55 @@
 import {
 	StyleSheet,
-	ButtonProps as RNButtonProps,
+	type TouchableOpacityProps,
 	TouchableOpacity,
 	ActivityIndicator,
+	type TextStyle,
 } from "react-native";
 
 import Text from "./text";
 import { variables } from "@/utils/styles";
 
-interface ButtonProps extends RNButtonProps {
-	variant?: "primary" | "secondary";
+interface ButtonProps extends TouchableOpacityProps {
+	variant?: "primary" | "secondary" | "danger";
 	loading?: boolean;
+
+	textStyle?: TextStyle;
+	children?: React.ReactNode;
 }
 
 export default function Button({
+	children,
 	loading = false,
 	variant = "primary",
+
+	textStyle,
+	style,
+
 	...props
 }: ButtonProps) {
+	const variantStyles = variants[variant];
+
 	return (
 		<TouchableOpacity
 			{...props}
 			activeOpacity={0.75}
 			style={{
 				...styles.button,
-				...(variant === "secondary" && styles.secondary),
+				...variantStyles,
+				...(style as object),
 			}}
 		>
 			{loading ? (
-				<ActivityIndicator color={variant === "primary" ? "black" : "white"} />
+				<ActivityIndicator color={variant === "primary" ? "#000" : "#FFF"} />
 			) : (
 				<Text
 					style={{
 						...styles.text,
 						...(variant === "secondary" && styles.secondaryText),
+						...textStyle,
 					}}
 				>
-					{props.title}
+					{children}
 				</Text>
 			)}
 		</TouchableOpacity>
@@ -45,14 +58,15 @@ export default function Button({
 
 const styles = StyleSheet.create({
 	button: {
-		width: "100%",
+		flex: 1,
 		textAlign: "center",
 		backgroundColor: variables.accent,
 
 		alignItems: "center",
 		justifyContent: "center",
 
-		height: 48,
+		height: "100%",
+		maxHeight: 48,
 		borderRadius: 8,
 	},
 
@@ -62,10 +76,23 @@ const styles = StyleSheet.create({
 		fontFamily: "Roundo-Bold",
 	},
 
-	secondary: {
-		backgroundColor: variables.backgroundTertiary,
-	},
 	secondaryText: {
 		color: variables.color,
+	},
+});
+
+// Variants
+const variants = StyleSheet.create({
+	primary: {
+		backgroundColor: variables.accent,
+		color: "#FFF",
+	},
+	secondary: {
+		backgroundColor: variables.backgroundTertiary,
+		color: variables.color,
+	},
+	danger: {
+		backgroundColor: variables.red,
+		color: "#FFF",
 	},
 });

@@ -1,27 +1,52 @@
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { faArrowLeftLong } from "@fortawesome/pro-solid-svg-icons";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
+
 import { classes, variables } from "@/utils/styles";
-import { Link } from "expo-router";
-import { StyleSheet, View } from "react-native";
+
 import Text from "./text";
+import { useNavigation } from "expo-router";
 
 interface HeaderProps {
-	title?: string;
+	title?: React.ReactNode;
+	children?: React.ReactNode;
+
+	backButton?: boolean;
 }
 
-export default function Header({ title }: HeaderProps) {
+export default function Header({ backButton, children, title }: HeaderProps) {
+	const navigation = useNavigation();
+
+	function goBack() {
+		return navigation.goBack();
+	}
 
 	return (
 		<View style={styles.header}>
-			<Link href="/">
+			<View style={{ flexDirection: "row", alignItems: "center", gap: 16 }}>
+				{backButton && navigation.canGoBack() && (
+					<TouchableOpacity onPress={goBack}>
+						<FontAwesomeIcon icon={faArrowLeftLong} color="#fff" size={20} />
+					</TouchableOpacity>
+				)}
+
 				<Text bold style={classes(styles.logo)}>
-					{title ? title : (
+					{title ? (
+						title
+					) : (
 						<>
-							Go<Text bold style={classes(styles.logo, styles.logoAccent)}>Squash</Text>
+							Go
+							<Text bold style={classes(styles.logo, styles.logoAccent)}>
+								Squash
+							</Text>
 						</>
 					)}
 				</Text>
-			</Link>
+			</View>
+
+			<View>{children}</View>
 		</View>
-	)
+	);
 }
 
 const styles = StyleSheet.create({
@@ -32,17 +57,16 @@ const styles = StyleSheet.create({
 		borderBottomWidth: 1,
 		paddingHorizontal: 24,
 		marginHorizontal: -24,
-		marginBottom: 16,
 
 		flexDirection: "row",
 		alignItems: "center",
+		justifyContent: "space-between",
 	},
 	logo: {
 		fontSize: 24,
 		fontWeight: "bold",
-		padding: variables.gap,
 	},
 	logoAccent: {
 		color: variables.accent,
-	}
-})
+	},
+});

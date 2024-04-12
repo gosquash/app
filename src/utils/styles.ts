@@ -10,7 +10,7 @@ export const variables = {
 	color: "#fff",
 	colorSecondary: "#8B8C8F",
 
-	red: "#FF215C",
+	red: "#FF4757",
 
 	header: {
 		height: 72,
