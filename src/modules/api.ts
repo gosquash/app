@@ -43,6 +43,8 @@ export async function fetchAPI<R = unknown, B extends BodyInit = BodyInit>(
 
 		const data: APIResponse<R> = await response.json();
 
+		console.log(data);
+
 		if (data.error) {
 			console.log(data);
 			return { error: true, data: data.data };

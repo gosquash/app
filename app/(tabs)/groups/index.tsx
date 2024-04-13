@@ -1,13 +1,16 @@
-import { useEffect } from "react";
-import { useRouter } from "expo-router";
-import { TouchableOpacity } from "react-native";
+import { faPlus } from "@fortawesome/pro-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { Link } from "expo-router";
+import { useCallback, useEffect, useState } from "react";
+import { RefreshControl, TouchableOpacity } from "react-native";
 
+import Button from "@/components/button";
 import Container from "@/components/container";
-import Text from "@/components/text";
 import Header from "@/components/header";
+import Text from "@/components/text";
 
 import { useGroups } from "@/store/groups";
-import Button from "@/components/button";
+import { variables } from "@/utils/styles";
 
 export default function Groups() {
 	const [groups, fetchGroups] = useGroups((state) => [
@@ -15,34 +18,51 @@ export default function Groups() {
 		state.fetchGroups,
 	]);
 
-	const router = useRouter();
+	const [refreshing, setRefreshing] = useState(false),
+		onRefresh = useCallback(() => {
+			setRefreshing(true);
+			refetchGroups();
+		}, []);
 
 	useEffect(() => {
 		fetchGroups();
 	}, []);
 
+	async function refetchGroups() {
+		await fetchGroups();
+
+		setRefreshing(false);
+	}
+
 	return (
-		<Container>
+		<Container
+			refreshControl={
+				<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+			}
+		>
 			<Header title="Groups">
 				<Button
-					style={{ height: "auto", paddingHorizontal: 16, paddingVertical: 8 }}
-					textStyle={{ fontSize: 14 }}
-					onPress={() => router.push("/groups/create")}
+					style={{
+						width: 24,
+						height: 24,
+					}}
+					href="groups/create"
 				>
-					Add
+					<FontAwesomeIcon icon={faPlus} size={18} color="#000" />
 				</Button>
 			</Header>
 
 			{groups.length === 0 ? (
-				<Text>There are no groups here.</Text>
+				<Text style={{ color: variables.colorSecondary }}>
+					There are no groups here.
+				</Text>
 			) : (
 				groups.map((group) => (
-					<TouchableOpacity
-						key={group.id}
-						onPress={() => router.push(`/groups/${group.id}`)}
-					>
-						<Text as="h3">{group.name}</Text>
-					</TouchableOpacity>
+					<Link href={`/groups/${group.id}`} asChild key={group.id}>
+						<TouchableOpacity>
+							<Text as="h3">{group.name}</Text>
+						</TouchableOpacity>
+					</Link>
 				))
 			)}
 		</Container>

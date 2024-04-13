@@ -18,6 +18,15 @@ module.exports = {
 		"prettier/prettier": "error",
 		"no-console": "warn",
 
+		semi: ["error", "always"],
+		quotes: ["error", "double"],
+		"comma-dangle": ["error", "always-multiline"],
+		"@typescript-eslint/comma-dangle": ["error", "always-multiline"],
+		"no-unused-vars": 0,
+		"@typescript-eslint/no-unused-vars": "warn",
+		"quote-props": ["error", "as-needed"],
+		"jsx-quotes": ["error", "prefer-double"],
+
 		// TypeScript
 		"@typescript-eslint/consistent-type-exports": [
 			"warn",

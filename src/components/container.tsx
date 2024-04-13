@@ -1,4 +1,5 @@
-import { ScrollView, ScrollViewProps, StyleSheet } from "react-native";
+import type { ScrollViewProps } from "react-native";
+import { ScrollView, StyleSheet } from "react-native";
 
 interface ContainerProps extends ScrollViewProps {
 	children?: React.ReactNode;
@@ -21,7 +22,7 @@ export default function Container({
 		<ScrollView
 			showsVerticalScrollIndicator={false}
 			{...props}
-			style={{ flex: 1, paddingHorizontal: 24 }}
+			style={{ flex: 1, paddingHorizontal: 32 }}
 			contentContainerStyle={{
 				...styles.container,
 				...(props.style as object),

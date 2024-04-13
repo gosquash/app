@@ -56,7 +56,7 @@ function Routes() {
 				}}
 			/>
 			<Tabs.Screen
-				name="groups/index"
+				name="groups"
 				options={{
 					lazy: true,
 					tabBarIcon: ({ focused }) => (
@@ -82,7 +82,6 @@ function Routes() {
 			/>
 
 			<Tabs.Screen name="games/index" options={{ href: null }} />
-			<Tabs.Screen name="settings/index" options={{ href: null }} />
 		</Tabs>
 	);
 }

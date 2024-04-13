@@ -1,9 +1,6 @@
 import { variables } from "@/utils/styles";
-import {
-	Text as RNText,
-	TextProps as RNTextProps,
-	StyleSheet,
-} from "react-native";
+import type { TextProps as RNTextProps } from "react-native";
+import { Text as RNText, StyleSheet } from "react-native";
 
 interface TextProps {
 	children: React.ReactNode;
@@ -43,6 +40,8 @@ export default function Text({
 		};
 	}
 
+	textStyles.lineHeight = textStyles.fontSize * 1.2;
+
 	return (
 		<RNText style={textStyles} {...rest}>
 			{children}
@@ -52,45 +51,44 @@ export default function Text({
 
 const styles = StyleSheet.create({
 	text: {
-		fontFamily: "Roundo-Regular",
+		fontFamily: "Geomanist-Regular",
 		color: variables.color,
 		fontSize: 14,
-		position: "relative",
-		top: 1.5,
+		lineHeight: 16,
 	},
 	bold: {
-		fontFamily: "Roundo-Bold",
+		fontFamily: "Geomanist-Bold",
 	},
 
 	// as
 	h1: {
 		fontSize: 32,
 		lineHeight: 40,
-		fontFamily: "Roundo-Bold",
+		fontFamily: "Geomanist-Bold",
 		marginBottom: 16,
 	},
 	h2: {
 		fontSize: 24,
 		lineHeight: 32,
-		fontFamily: "Roundo-Bold",
+		fontFamily: "Geomanist-Bold",
 		marginBottom: 16,
 	},
 	h3: {
 		fontSize: 20,
 		lineHeight: 24,
-		fontFamily: "Roundo-Bold",
+		fontFamily: "Geomanist-Bold",
 		marginBottom: 16,
 	},
 	h4: {
 		fontSize: 16,
 		lineHeight: 20,
-		fontFamily: "Roundo-Bold",
+		fontFamily: "Geomanist-Bold",
 		marginBottom: 8,
 	},
 	p: {
 		fontSize: 16,
 		lineHeight: 20,
-		fontFamily: "Roundo-Regular",
+		fontFamily: "Geomanist-Regular",
 		marginBottom: 8,
 	},
 });

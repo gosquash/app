@@ -1,5 +1,4 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useRouter } from "expo-router";
 import { View } from "react-native";
 
 import Button from "@/components/button";
@@ -13,6 +12,7 @@ import useForm from "@/hooks/use-form";
 import { fetchAPI } from "@/modules/api";
 
 import { variables } from "@/utils/styles";
+import { useNavigation, useRouter } from "expo-router";
 
 type Fields = {
 	email: string;
@@ -25,6 +25,8 @@ const form = useForm<Fields>({
 		password: "",
 	},
 	async submit({ email, password }) {
+		console.log(email, password);
+
 		const data = await fetchAPI<{ token: string }>("/auth/login", {
 			method: "POST",
 			headers: {
@@ -35,17 +37,18 @@ const form = useForm<Fields>({
 
 		if (data.error === true) {
 			alert("Invalid email or password");
-			return;
+			return false;
 		}
 
 		const { token } = data;
 		await AsyncStorage.setItem("token", token);
+
+		return true;
 	},
 });
 
 export default function Login() {
 	const router = useRouter();
-
 	const [loading, fields, setFields, submit] = form((state) => [
 		state.loading,
 		state.fields,
@@ -55,6 +58,7 @@ export default function Login() {
 
 	return (
 		<Container
+			scrollEnabled={false}
 			style={{
 				justifyContent: "center",
 				alignItems: "center",
@@ -89,16 +93,22 @@ export default function Login() {
 				/>
 
 				<View>
-					<Button onPress={() => submit(fields)} loading={loading}>
+					<Button
+						onPress={async () => {
+							const result = await submit(fields);
+							if (result) {
+								console.log("success");
+								router.replace("(tabs)");
+							}
+						}}
+						loading={loading}
+					>
 						Login
 					</Button>
 
 					<Divider />
 
-					<Button
-						variant="secondary"
-						onPress={() => router.replace("register")}
-					>
+					<Button href="register" variant="secondary" replace>
 						Register
 					</Button>
 				</View>

@@ -1,15 +1,19 @@
+import { Link } from "expo-router";
 import {
-	StyleSheet,
-	type TouchableOpacityProps,
-	TouchableOpacity,
 	ActivityIndicator,
+	StyleSheet,
+	TouchableOpacity,
 	type TextStyle,
+	type TouchableOpacityProps,
 } from "react-native";
 
+import { Fragment } from "react";
 import Text from "./text";
-import { variables } from "@/utils/styles";
 
-interface ButtonProps extends TouchableOpacityProps {
+import { variables } from "@/utils/styles";
+import type { LinkProps } from "expo-router/build/link/Link";
+
+interface ButtonProps extends TouchableOpacityProps, ButtonLinkProps {
 	variant?: "primary" | "secondary" | "danger";
 	loading?: boolean;
 
@@ -17,10 +21,18 @@ interface ButtonProps extends TouchableOpacityProps {
 	children?: React.ReactNode;
 }
 
+interface ButtonLinkProps {
+	href?: string;
+	replace?: boolean;
+}
+
 export default function Button({
 	children,
 	loading = false,
 	variant = "primary",
+
+	href,
+	replace = false,
 
 	textStyle,
 	style,
@@ -31,31 +43,40 @@ export default function Button({
 		variantTextStyle =
 			variants[`${variant}Text` as keyof typeof variants] ?? {};
 
+	const Parent = href ? Link : Fragment;
+	const parentProps: LinkProps = (
+		href ? { href, replace, asChild: true } : {}
+	) as LinkProps;
+
 	return (
-		<TouchableOpacity
-			{...props}
-			activeOpacity={0.75}
-			style={{
-				...styles.button,
-				...variantStyles,
-				...(style as object),
-			}}
-		>
-			{loading ? (
-				<ActivityIndicator color={variant === "primary" ? "#000" : "#FFF"} />
-			) : (
-				<Text
-					bold
-					style={{
-						...styles.text,
-						...variantTextStyle,
-						...textStyle,
-					}}
-				>
-					{children}
-				</Text>
-			)}
-		</TouchableOpacity>
+		<Parent {...parentProps}>
+			<TouchableOpacity
+				{...props}
+				activeOpacity={0.75}
+				style={{
+					...styles.button,
+					...variantStyles,
+					...(style as object),
+				}}
+			>
+				{loading ? (
+					<ActivityIndicator color={variant === "primary" ? "#000" : "#FFF"} />
+				) : typeof children === "string" ? (
+					<Text
+						bold
+						style={{
+							...styles.text,
+							...variantTextStyle,
+							...textStyle,
+						}}
+					>
+						{children}
+					</Text>
+				) : (
+					children
+				)}
+			</TouchableOpacity>
+		</Parent>
 	);
 }
 
@@ -75,6 +96,7 @@ const styles = StyleSheet.create({
 	text: {
 		color: "#000",
 		fontSize: 18,
+		lineHeight: 24,
 	},
 });
 

@@ -1,11 +1,11 @@
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
 	faBan,
 	faGear,
 	faUserCheck,
 	faUserPlus,
 } from "@fortawesome/pro-duotone-svg-icons";
-import { useRouter } from "expo-router";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { Link } from "expo-router";
 import { useState } from "react";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 
@@ -18,7 +18,6 @@ import { variables } from "@/utils/styles";
 
 export default function Profile() {
 	const user = useUser((state) => state.user);
-	const router = useRouter();
 
 	const [friends, setFriends] = useState(false);
 
@@ -37,16 +36,21 @@ export default function Profile() {
 					<Text>QR</Text>
 				</View>
 
-				<TouchableOpacity
-					style={styles.settings}
-					onPress={() => router.push("/settings")}
+				<Link
+					href={{
+						pathname: "profile/[username]/settings",
+						params: { username: user?.name },
+					}}
+					asChild
 				>
-					<FontAwesomeIcon
-						icon={faGear}
-						size={24}
-						color={variables.colorSecondary}
-					/>
-				</TouchableOpacity>
+					<TouchableOpacity style={styles.settings}>
+						<FontAwesomeIcon
+							icon={faGear}
+							size={24}
+							color={variables.colorSecondary}
+						/>
+					</TouchableOpacity>
+				</Link>
 			</View>
 
 			<View
@@ -77,7 +81,7 @@ const styles = StyleSheet.create({
 		backgroundColor: variables.backgroundSecondary,
 		borderBottomColor: variables.borderColor,
 		borderBottomWidth: 1,
-		marginHorizontal: -24,
+		marginHorizontal: -32,
 
 		alignItems: "center",
 		justifyContent: "center",

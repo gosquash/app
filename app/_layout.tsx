@@ -16,9 +16,8 @@ export default function Layout() {
 	const [userLoading, setUserLoading] = useState(true);
 
 	const [fontsLoaded] = useFonts({
-		"Roundo-Regular": require("../assets/fonts/Roundo-Regular.ttf"),
-		"Roundo-Bold": require("../assets/fonts/Roundo-Bold.ttf"),
-		"Roundo-Light": require("../assets/fonts/Roundo-Light.ttf"),
+		"Geomanist-Bold": require("../assets/fonts/Geomanist-Bold.ttf"),
+		"Geomanist-Regular": require("../assets/fonts/Geomanist-Regular.ttf"),
 	});
 
 	useEffect(() => {

@@ -1,4 +1,3 @@
-import { useRouter } from "expo-router";
 import { View } from "react-native";
 
 import Button from "@/components/button";
@@ -44,8 +43,6 @@ const form = useForm<Fields>({
 });
 
 export default function Register() {
-	const router = useRouter();
-
 	const [loading, fields, setFields, submit] = form((state) => [
 		state.loading,
 		state.fields,
@@ -55,6 +52,7 @@ export default function Register() {
 
 	return (
 		<Container
+			scrollEnabled={false}
 			style={{
 				justifyContent: "center",
 				alignItems: "center",
@@ -101,7 +99,7 @@ export default function Register() {
 
 				<Divider />
 
-				<Button variant="secondary" onPress={() => router.replace("login")}>
+				<Button href="login" variant="secondary" replace>
 					Login
 				</Button>
 			</View>

@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { StyleSheet, TextInput, TextInputProps, View } from "react-native";
+import type { TextInputProps } from "react-native";
+import { StyleSheet, TextInput, View } from "react-native";
 
 import Text from "@/components/text";
 
@@ -33,7 +34,7 @@ export default function Input({ type = "text", ...props }: InputProps) {
 		<View style={styles.container}>
 			{props.prefix && (
 				<View style={styles.prefix}>
-					<Text style={{ fontSize: 16, fontFamily: "Roundo-Bold" }}>
+					<Text bold style={{ fontSize: 16 }}>
 						{props.prefix}
 					</Text>
 				</View>
@@ -43,6 +44,7 @@ export default function Input({ type = "text", ...props }: InputProps) {
 				{...props}
 				style={{
 					...styles.input,
+					fontFamily: "Geomanist-Regular",
 					borderColor: focus ? variables.accent : variables.borderColor,
 				}}
 				onFocus={(event) => {
@@ -73,7 +75,7 @@ const styles = StyleSheet.create({
 		width: "100%",
 		height: "100%",
 		flex: 1,
-		fontFamily: "Roundo-Regular",
+		fontFamily: "GothamSSm-Book",
 		paddingHorizontal: 16,
 		lineHeight: 18,
 		fontSize: 16,

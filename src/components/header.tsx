@@ -1,11 +1,11 @@
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faArrowLeftLong } from "@fortawesome/pro-solid-svg-icons";
+import { useNavigation } from "expo-router";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 
 import { classes, variables } from "@/utils/styles";
 
 import Text from "./text";
-import { useNavigation } from "expo-router";
 
 interface HeaderProps {
 	title?: React.ReactNode;
@@ -29,8 +29,10 @@ export default function Header({ backButton, children, title }: HeaderProps) {
 						<FontAwesomeIcon icon={faArrowLeftLong} color="#fff" size={20} />
 					</TouchableOpacity>
 				)}
+			</View>
 
-				<Text bold style={classes(styles.logo)}>
+			<View style={styles.logoContainer}>
+				<Text bold style={styles.logo}>
 					{title ? (
 						title
 					) : (
@@ -51,19 +53,29 @@ export default function Header({ backButton, children, title }: HeaderProps) {
 
 const styles = StyleSheet.create({
 	header: {
+		position: "relative",
 		height: 48,
 		backgroundColor: variables.background,
 		borderBottomColor: variables.borderColor,
 		borderBottomWidth: 1,
 		paddingHorizontal: 24,
-		marginHorizontal: -24,
+		marginHorizontal: -32,
 
 		flexDirection: "row",
 		alignItems: "center",
 		justifyContent: "space-between",
 	},
+	logoContainer: {
+		...StyleSheet.absoluteFillObject,
+		zIndex: -1,
+		alignItems: "center",
+		justifyContent: "center",
+	},
 	logo: {
-		fontSize: 24,
+		textAlign: "center",
+		textAlignVertical: "center",
+
+		fontSize: 20,
 		fontWeight: "bold",
 	},
 	logoAccent: {

@@ -11,12 +11,12 @@ interface Store<F extends Fields = Fields> {
 	setLoading: (loading: boolean) => void;
 	setError: (error: string) => void;
 	setFields: (fields: Partial<F>) => void;
-	submit: (values: F) => Promise<void>;
+	submit: (values: F) => Promise<any>;
 }
 
 interface UseFormProps<F extends Fields = Fields> {
 	fields: F;
-	submit: (values: F) => Promise<void>;
+	submit(values: F): Promise<any>;
 }
 
 export default function useForm<F extends Fields>({
@@ -32,11 +32,11 @@ export default function useForm<F extends Fields>({
 		setError: (error) => set(() => ({ error })),
 		setFields: (fields) =>
 			set((state) => ({ fields: { ...state.fields, ...fields } })),
-		submit: async () => {
+		submit: async (fields) => {
 			set({ loading: true });
 
 			try {
-				await submit(fields);
+				return submit(fields);
 			} catch (error) {
 				console.log(error);
 			} finally {
