@@ -1,4 +1,3 @@
-import { useHookstate } from "@hookstate/core";
 import { Link } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -6,20 +5,20 @@ import {
 	RefreshControl,
 	StyleSheet,
 	TouchableHighlight,
-	TouchableOpacity,
 	View,
 } from "react-native";
 
 import Container from "@/components/container";
 import Text from "@/components/text";
 
-import { fetchGames, games } from "@/store";
+import { useGames } from "@/store/game";
 import { variables } from "@/utils/styles";
 
 export default function Games() {
-	const state = useHookstate(games);
-
-	const gamesState = state.get();
+	const [games, fetchGames] = useGames((state) => [
+		state.games,
+		state.fetchGames,
+	]);
 
 	const [refreshing, setRefreshing] = useState(false),
 		onRefresh = useCallback(() => {
@@ -28,7 +27,9 @@ export default function Games() {
 		}, []);
 
 	useEffect(() => {
-		fetchGames();
+		if (games.length === 0) {
+			fetchGames();
+		}
 	}, []);
 
 	async function refetchGames() {
@@ -40,28 +41,16 @@ export default function Games() {
 	return (
 		<Container
 			refreshControl={
-				<RefreshControl
-					refreshing={refreshing}
-					onRefresh={onRefresh}
-				/>
+				<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
 			}
 		>
 			<Text as="h2">Your games</Text>
 
 			<View>
-				{gamesState.map((game) => (
-					<TouchableHighlight
-						key={game.id}
-						style={{marginBottom: 16}}
-					>
-						<Link
-							href={`/games/${game.id}`}
-							style={styles.game}
-						>
-							<Text
-								bold
-								style={styles.score}
-							>
+				{games.map((game) => (
+					<TouchableHighlight key={game.id} style={{ marginBottom: 16 }}>
+						<Link href={`/games/${game.id}`} style={styles.game}>
+							<Text bold style={styles.score}>
 								{game.players[0].points}
 							</Text>
 							<Image
@@ -71,10 +60,7 @@ export default function Games() {
 								}}
 							/>
 
-							<Text
-								bold
-								style={{ color: variables.colorSecondary }}
-							>
+							<Text bold style={{ color: variables.colorSecondary }}>
 								vs
 							</Text>
 
@@ -84,10 +70,7 @@ export default function Games() {
 									uri: `https://api.multiavatar.com/${game.players[1].user.name}.png`,
 								}}
 							/>
-							<Text
-								bold
-								style={styles.score}
-							>
+							<Text bold style={styles.score}>
 								{game.players[1].points}
 							</Text>
 						</Link>

@@ -1,28 +1,30 @@
-import { useRouter } from "expo-router";
-import { useState } from "react";
-import { View } from "react-native";
-
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useRouter } from "expo-router";
+import { View } from "react-native";
 
 import Button from "@/components/button";
 import Container from "@/components/container";
 import Divider from "@/components/divider";
 import Input from "@/components/input";
 import Text from "@/components/text";
+
+import useForm from "@/hooks/use-form";
+
 import { fetchAPI } from "@/modules/api";
+
 import { variables } from "@/utils/styles";
 
-export default function Login() {
-	const router = useRouter();
+type Fields = {
+	email: string;
+	password: string;
+};
 
-	const [loading, setLoading] = useState(false);
-	const [fields, setFields] = useState({ email: "", password: "" });
-
-	async function login() {
-		setLoading(true);
-
-		const { email, password } = fields;
-
+const form = useForm<Fields>({
+	fields: {
+		email: "",
+		password: "",
+	},
+	async submit({ email, password }) {
 		const data = await fetchAPI<{ token: string }>("/auth/login", {
 			method: "POST",
 			headers: {
@@ -37,11 +39,19 @@ export default function Login() {
 		}
 
 		const { token } = data;
-
 		await AsyncStorage.setItem("token", token);
+	},
+});
 
-		setLoading(false);
-	}
+export default function Login() {
+	const router = useRouter();
+
+	const [loading, fields, setFields, submit] = form((state) => [
+		state.loading,
+		state.fields,
+		state.setFields,
+		state.submit,
+	]);
 
 	return (
 		<Container
@@ -57,7 +67,7 @@ export default function Login() {
 					width: "100%",
 					padding: 24,
 					borderRadius: 12,
-					rowGap: 16,
+					gap: 16,
 				}}
 			>
 				<Text as="h1" style={{ textAlign: "center", marginBottom: 0 }}>
@@ -69,34 +79,29 @@ export default function Login() {
 					placeholder="Email"
 					value={fields.email}
 					autoCapitalize="none"
-					onChangeText={(value) =>
-						setFields((prev) => ({
-							...prev,
-							email: value,
-						}))
-					}
+					onChangeText={(email) => setFields({ email })}
 				/>
 				<Input
 					type="password"
 					placeholder="Password"
 					value={fields.password}
-					onChangeText={(value) =>
-						setFields((prev) => ({
-							...prev,
-							password: value,
-						}))
-					}
+					onChangeText={(password) => setFields({ password })}
 				/>
 
-				<Button title="Login" loading={loading} onPress={login} />
+				<View>
+					<Button onPress={() => submit(fields)} loading={loading}>
+						Login
+					</Button>
 
-				<Divider />
+					<Divider />
 
-				<Button
-					title="Register"
-					variant="secondary"
-					onPress={() => router.replace("auth/register")}
-				/>
+					<Button
+						variant="secondary"
+						onPress={() => router.replace("register")}
+					>
+						Register
+					</Button>
+				</View>
 			</View>
 		</Container>
 	);

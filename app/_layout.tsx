@@ -3,15 +3,16 @@ import { Stack } from "expo-router/stack";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
+import { KeyboardAvoidingView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { fetchUser, useUser } from "@/store/user";
+import { useUser } from "@/store/user";
 import { variables } from "@/utils/styles";
 
 SplashScreen.preventAutoHideAsync();
 
 export default function Layout() {
-	const login = useUser((state) => state.login);
+	const fetchUser = useUser((state) => state.fetchUser);
 	const [userLoading, setUserLoading] = useState(true);
 
 	const [fontsLoaded] = useFonts({
@@ -24,13 +25,7 @@ export default function Layout() {
 		async function run() {
 			await new Promise((resolve) => setTimeout(resolve, 1000));
 
-			const user = await fetchUser();
-
-			if (!user) {
-				return;
-			}
-
-			login(user);
+			await fetchUser();
 
 			setUserLoading(false);
 		}
@@ -50,7 +45,14 @@ export default function Layout() {
 		<>
 			<StatusBar style="light" />
 
-			{!isLoading && <App />}
+			<KeyboardAvoidingView
+				style={{
+					backgroundColor: "#131317",
+					flex: 1,
+				}}
+			>
+				{!isLoading && <App />}
+			</KeyboardAvoidingView>
 		</>
 	);
 }

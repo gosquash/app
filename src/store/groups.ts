@@ -1,36 +1,24 @@
-import { hookstate } from "@hookstate/core";
+import { create } from "zustand";
 
-import type { User } from "."
 import { fetchAPI } from "@/modules/api";
+import type { Group } from "@/types/group";
 
-interface Group {
-	id: string;
-	name: string;
-	creator: User;
+interface GroupState {
+	groups: Group[];
 
-	createdAt: string;
-	updatedAt: string;
+	fetchGroups: () => Promise<void>;
 }
 
-interface GroupWithMembers extends Group {
-	members: GroupMember[];
-}
+export const useGroups = create<GroupState>((set) => ({
+	groups: [],
 
-interface GroupMember {
-	user: User;
-}
+	fetchGroups: async () => {
+		const data = await fetchAPI<{ groups: Group[] }>("/me/groups");
 
-export const groups = hookstate<Group[]>([]);
+		if (data.error) {
+			return;
+		}
 
-export async function fetchGroups() {
-	console.log("hullu")
-	const data = await fetchAPI<{ groups: Group[] }>("/me/groups");
-
-	console.log({ data });
-
-	if (data.error) {
-		return;
-	}
-
-	groups.set(data.groups ?? []);
-}
+		set({ groups: data.groups ?? [] });
+	},
+}));

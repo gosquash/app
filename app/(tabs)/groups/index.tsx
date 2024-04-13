@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import { useHookstate } from "@hookstate/core";
 import { useRouter } from "expo-router";
 import { TouchableOpacity } from "react-native";
 
@@ -7,12 +6,14 @@ import Container from "@/components/container";
 import Text from "@/components/text";
 import Header from "@/components/header";
 
-import { fetchGroups, groups } from "@/store/groups";
+import { useGroups } from "@/store/groups";
 import Button from "@/components/button";
 
 export default function Groups() {
-	const _groups = useHookstate(groups),
-		groupsState = _groups.get();
+	const [groups, fetchGroups] = useGroups((state) => [
+		state.groups,
+		state.fetchGroups,
+	]);
 
 	const router = useRouter();
 
@@ -35,7 +36,7 @@ export default function Groups() {
 			{groups.length === 0 ? (
 				<Text>There are no groups here.</Text>
 			) : (
-				groupsState.map((group) => (
+				groups.map((group) => (
 					<TouchableOpacity
 						key={group.id}
 						onPress={() => router.push(`/groups/${group.id}`)}

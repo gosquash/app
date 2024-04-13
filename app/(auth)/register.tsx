@@ -1,12 +1,13 @@
 import { useRouter } from "expo-router";
-import { useState } from "react";
 import { View } from "react-native";
 
-import Container from "@/components/container";
 import Button from "@/components/button";
-import Text from "@/components/text";
-import Input from "@/components/input";
+import Container from "@/components/container";
 import Divider from "@/components/divider";
+import Input from "@/components/input";
+import Text from "@/components/text";
+
+import useForm from "@/hooks/use-form";
 
 import { fetchAPI } from "@/modules/api";
 
@@ -18,34 +19,39 @@ interface Fields {
 	password: string;
 }
 
-async function register(values: Fields) {
-	const { email, username, password } = values;
+const form = useForm<Fields>({
+	fields: {
+		email: "",
+		username: "",
+		password: "",
+	},
+	async submit({ email, username, password }) {
+		const { error } = await fetchAPI<{ error: boolean }>("/auth/register", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({ email, username, password }),
+		});
 
-	const data = await fetchAPI("/auth/register", {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify({ email, username, password }),
-	});
+		if (error) {
+			alert("Invalid email or password");
+			return;
+		}
 
-	if (data.error === true) {
-		console.log(data);
-		alert("Invalid email or password");
-		return;
-	}
-
-	alert("Register successful");
-}
+		alert("Register successful");
+	},
+});
 
 export default function Register() {
 	const router = useRouter();
 
-	const [fields, setFields] = useState<Fields>({
-		email: "",
-		username: "",
-		password: "",
-	});
+	const [loading, fields, setFields, submit] = form((state) => [
+		state.loading,
+		state.fields,
+		state.setFields,
+		state.submit,
+	]);
 
 	return (
 		<Container
@@ -73,36 +79,31 @@ export default function Register() {
 					placeholder="Email"
 					autoCapitalize="none"
 					value={fields.email}
-					onChangeText={(value) => setFields({ ...fields, email: value })}
+					onChangeText={(email) => setFields({ email })}
 				/>
 				<Input
 					placeholder="Username"
 					autoCapitalize="none"
 					prefix="@"
 					value={fields.username}
-					onChangeText={(value) => setFields({ ...fields, username: value })}
+					onChangeText={(username) => setFields({ username })}
 				/>
 				<Input
 					type="password"
 					placeholder="Password"
 					value={fields.password}
-					onChangeText={(value) => setFields({ ...fields, password: value })}
+					onChangeText={(password) => setFields({ password })}
 				/>
 
-				<Button
-					title="Register"
-					onPress={() => {
-						register(fields);
-					}}
-				/>
+				<Button onPress={() => submit(fields)} loading={loading}>
+					Register
+				</Button>
 
 				<Divider />
 
-				<Button
-					title="Login"
-					variant="secondary"
-					onPress={() => router.replace("auth/login")}
-				/>
+				<Button variant="secondary" onPress={() => router.replace("login")}>
+					Login
+				</Button>
 			</View>
 		</Container>
 	);

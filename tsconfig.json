@@ -13,5 +13,6 @@
     "./app",
     "./src",
     ".eslintrc.cjs",
+    "app.config.js",
   ]
 }

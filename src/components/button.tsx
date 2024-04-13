@@ -27,7 +27,9 @@ export default function Button({
 
 	...props
 }: ButtonProps) {
-	const variantStyles = variants[variant];
+	const variantStyles = variants[variant] ?? {},
+		variantTextStyle =
+			variants[`${variant}Text` as keyof typeof variants] ?? {};
 
 	return (
 		<TouchableOpacity
@@ -43,9 +45,10 @@ export default function Button({
 				<ActivityIndicator color={variant === "primary" ? "#000" : "#FFF"} />
 			) : (
 				<Text
+					bold
 					style={{
 						...styles.text,
-						...(variant === "secondary" && styles.secondaryText),
+						...variantTextStyle,
 						...textStyle,
 					}}
 				>
@@ -58,26 +61,20 @@ export default function Button({
 
 const styles = StyleSheet.create({
 	button: {
-		flex: 1,
+		// flex: 1,
 		textAlign: "center",
 		backgroundColor: variables.accent,
 
 		alignItems: "center",
 		justifyContent: "center",
 
-		height: "100%",
-		maxHeight: 48,
+		height: 48,
 		borderRadius: 8,
 	},
 
 	text: {
 		color: "#000",
 		fontSize: 18,
-		fontFamily: "Roundo-Bold",
-	},
-
-	secondaryText: {
-		color: variables.color,
 	},
 });
 
@@ -85,14 +82,20 @@ const styles = StyleSheet.create({
 const variants = StyleSheet.create({
 	primary: {
 		backgroundColor: variables.accent,
-		color: "#FFF",
+	},
+	primaryText: {
+		color: "#000",
 	},
 	secondary: {
 		backgroundColor: variables.backgroundTertiary,
+	},
+	secondaryText: {
 		color: variables.color,
 	},
 	danger: {
 		backgroundColor: variables.red,
+	},
+	dangerText: {
 		color: "#FFF",
 	},
 });

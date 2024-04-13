@@ -1,29 +1,26 @@
 import { create } from "zustand";
 
 import { fetchAPI } from "@/modules/api";
-
-export interface User {
-	id: number;
-	name: string;
-	email: string;
-}
+import type { User } from "@/types/user";
 
 interface UserState {
 	user: User | null;
-	login: (user: User) => void;
+
+	fetchUser(): Promise<User | null>;
 }
 
 export const useUser = create<UserState>((set) => ({
 	user: null,
-	login: (user) => set((state) => ({ user })),
+
+	fetchUser: async () => {
+		const user = await fetchAPI<User>("/me");
+
+		if (user.error) {
+			return null;
+		}
+
+		set({ user });
+
+		return user as User;
+	},
 }));
-
-export async function fetchUser(): Promise<User | false> {
-	const data = await fetchAPI<User>("/me");
-
-	if (data.error === true) {
-		return false;
-	}
-
-	return data;
-}
