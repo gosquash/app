@@ -1,22 +1,11 @@
-const os = require("os");
-const interfaces = os.networkInterfaces();
+import type { ConfigContext, ExpoConfig } from "expo/config";
+import { ip } from "address";
 
-let ipAddress = "";
+const ipAddress = ip();
 
-for (const name in interfaces) {
-	for (const iface of interfaces[name]) {
-		if (iface.family === "IPv4" && !iface.internal) {
-			ipAddress = iface.address;
-			break;
-		}
-	}
-}
-
-console.log(ipAddress);
-
-/** @type {import("expo/config").ExpoConfig} */
-module.exports = {
-	expo: {
+export default ({ config }: ConfigContext): ExpoConfig => {
+	return {
+		...config,
 		name: "GoSquash",
 		slug: "gosquash",
 		scheme: "gosquash",
@@ -45,7 +34,7 @@ module.exports = {
 		plugins: ["expo-router"],
 
 		extra: {
-			apiUrl: process.env.API_URL,
+			apiUrl: process.env.EXPO_PUBLIC_API_URL ?? `http://${ipAddress}:1323`,
 		},
-	},
+	};
 };

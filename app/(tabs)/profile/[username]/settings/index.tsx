@@ -2,6 +2,7 @@ import { faGear, faLock } from "@fortawesome/pro-duotone-svg-icons";
 import { faChevronRight } from "@fortawesome/pro-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Link } from "expo-router";
+import Constants from "expo-constants";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 
 import Container from "@/components/container";
@@ -77,7 +78,7 @@ export default function ProfileSettings() {
 				<Text bold>App Version</Text>
 
 				<Text style={{ letterSpacing: 1.2, color: variables.colorSecondary }}>
-					v0.0.1
+					v{Constants.expoConfig?.version}
 				</Text>
 			</View>
 		</Container>
